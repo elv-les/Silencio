@@ -67,15 +67,15 @@
         .bar.today { background: var(--silver); opacity: 1; }
         .report-stats { display: flex; justify-content: space-between; font-size: 0.6rem; color: var(--text-dim); margin-top: 8px; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* Settings Modal Improvements */
+        /* Modal Settings */
         #qrModal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--card-bg); padding: 30px; border-radius: 30px; border: 1px solid var(--glass-border); z-index: 1000; text-align: center; width: 320px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
         #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 999; backdrop-filter: blur(4px); }
         
         .update-box { text-align: left; margin: 15px 0; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 15px; font-size: 0.75rem; border: 1px solid var(--glass-border); }
         .update-box h4 { margin: 0 0 8px 0; font-size: 0.8rem; color: var(--text-main); display: flex; justify-content: space-between; }
         .update-box ul { margin: 0; padding-left: 18px; color: var(--text-dim); }
-        .update-box li { margin-bottom: 4px; }
-
+        
+        .mail-link { color: var(--text-main); text-decoration: none; border-bottom: 1px solid var(--text-dim); font-weight: 600; }
         .settings-link { font-size: 0.75rem; color: var(--text-dim); cursor: pointer; display: flex; align-items: center; gap: 6px; }
         .settings-link:hover { color: var(--text-main); }
     </style>
@@ -136,31 +136,28 @@
 
     <div id="overlay" onclick="closeQR()"></div>
     <div id="qrModal">
-        <h3 style="margin:0">Settings & Logs</h3>
+        <h3 style="margin:0">Control Panel</h3>
         
         <div class="update-box">
-            <h4>v1.2 Updates <span>✨</span></h4>
+            <h4>v1.2 Change Log <span>✨</span></h4>
             <ul>
-                <li>Added Weekly Focus Report tracking.</li>
-                <li>Fixed LocalStorage persistence bugs.</li>
-                <li>Enabled 40Hz Cognitive Binaural Beats.</li>
+                <li>Weekly Focus Dashboard.</li>
+                <li>Persistent Coffee Rewards.</li>
+                <li>40Hz Binaural Deep Focus.</li>
             </ul>
         </div>
 
         <div class="update-box">
-            <h4>Known Issues <span>⚠️</span></h4>
-            <ul>
-                <li>Audio may stutter on mobile battery saver.</li>
-                <li>Full-screen requires user tap on iOS.</li>
-            </ul>
+            <h4>Support & Issues <span>📩</span></h4>
+            <p style="margin: 5px 0;">Report bugs or ideas to: <br>
+            <a href="mailto:leslievyaselvis@gmail.com" class="mail-link">leslievyaselvis@gmail.com</a></p>
         </div>
 
-        <p style="font-size: 0.7rem; color: var(--text-dim); margin: 15px 0 5px;">Scan to Support Development</p>
-        <img id="qrImg" src="" style="border: 8px solid white; border-radius: 12px; width: 140px; margin-bottom: 10px;">
-        <p style="font-size: 0.75rem; font-weight: 700;">elbel.vyas@okhdfcbank</p>
+        <img id="qrImg" src="" style="border: 8px solid white; border-radius: 12px; width: 130px; margin-bottom: 10px;">
+        <p style="font-size: 0.75rem; font-weight: 700; margin: 0;">elbel.vyas@okhdfcbank</p>
         
-        <button onclick="closeQR()" style="background:var(--text-main); color:var(--bg); border:none; padding:12px; border-radius:12px; width:100%; cursor:pointer; margin-top:10px; font-weight:600">Back to Focus</button>
-        <button onclick="if(confirm('Wipe all focus data?')) {localStorage.clear(); location.reload();}" style="color: #ff3b30; background:none; border:none; margin-top:15px; font-size:0.65rem; cursor:pointer; opacity:0.6">Reset Entire Dashboard</button>
+        <button onclick="closeQR()" style="background:var(--text-main); color:var(--bg); border:none; padding:12px; border-radius:12px; width:100%; cursor:pointer; margin-top:15px; font-weight:600">Back to Focus</button>
+        <button onclick="if(confirm('Wipe all history?')) {localStorage.clear(); location.reload();}" style="color: #ff3b30; background:none; border:none; margin-top:15px; font-size:0.6rem; cursor:pointer; opacity:0.6">Reset All Data</button>
     </div>
 
     <script>
@@ -176,13 +173,9 @@
         function checkDateShift() {
             const today = new Date().toDateString();
             if (stats.lastDate !== today) {
-                const daysMissed = Math.floor((new Date(today) - new Date(stats.lastDate)) / (1000 * 60 * 60 * 24));
-                for(let i=0; i<Math.min(daysMissed, 7); i++) {
-                    stats.week.shift();
-                    stats.week.push(0);
-                }
-                stats.lastDate = today;
-                save();
+                const diff = Math.floor((new Date(today) - new Date(stats.lastDate)) / 86400000);
+                for(let i=0; i<Math.min(diff, 7); i++) { stats.week.shift(); stats.week.push(0); }
+                stats.lastDate = today; save();
             }
         }
 
@@ -194,37 +187,21 @@
             const timeStr = `${m}:${s < 10 ? '0' : ''}${s}`;
             document.getElementById('timer').textContent = timeStr;
             document.title = `(${timeStr}) Silencio.`;
-            
             document.getElementById('todayMins').textContent = stats.week[6] + 'm';
             document.getElementById('coffeeFill').style.height = stats.coffeeLevel + '%';
             document.getElementById('coffeeCount').textContent = stats.coffeeTotal;
 
             const bars = document.querySelectorAll('.bar');
             const maxMins = Math.max(...stats.week, 60);
-            stats.week.forEach((mins, i) => {
-                bars[i].style.height = (mins / maxMins * 100) + '%';
-            });
+            stats.week.forEach((mins, i) => { bars[i].style.height = (mins / maxMins * 100) + '%'; });
         }
 
         function toggleTimer() {
-            if (timerId) {
-                clearInterval(timerId); timerId = null;
-                document.getElementById('startBtn').textContent = "Resume";
-            } else {
-                document.getElementById('startBtn').textContent = "Pause";
-                timerId = setInterval(() => {
-                    timeLeft--; updateUI();
-                    if (timeLeft <= 0) { clearInterval(timerId); timerId = null; finish(); }
-                }, 1000);
-            }
+            if (timerId) { clearInterval(timerId); timerId = null; document.getElementById('startBtn').textContent = "Resume"; }
+            else { document.getElementById('startBtn').textContent = "Pause"; timerId = setInterval(() => { timeLeft--; updateUI(); if (timeLeft <= 0) { clearInterval(timerId); timerId = null; finish(); } }, 1000); }
         }
 
-        function resetTimer() {
-            clearInterval(timerId); timerId = null;
-            timeLeft = (isWork ? workT : breakT) * 60;
-            document.getElementById('startBtn').textContent = "Start";
-            updateUI();
-        }
+        function resetTimer() { clearInterval(timerId); timerId = null; timeLeft = (isWork ? workT : breakT) * 60; document.getElementById('startBtn').textContent = "Start"; updateUI(); }
 
         function finish() {
             if (isWork) {
@@ -234,34 +211,23 @@
                 if (stats.coffeeLevel >= 100) { stats.coffeeTotal += Math.floor(stats.coffeeLevel/100); stats.coffeeLevel %= 100; }
                 save();
             }
-            alert(isWork ? "Focus Session Complete!" : "Break Over!");
             isWork = !isWork; timeLeft = (isWork ? workT : breakT) * 60;
             updateUI(); document.getElementById('startBtn').textContent = "Start";
         }
 
         function toggleTheme() {
-            const isLight = document.body.getAttribute('data-theme') === 'light';
-            if (isLight) document.body.removeAttribute('data-theme');
-            else document.body.setAttribute('data-theme', 'light');
-            localStorage.setItem('theme', isLight ? 'dark' : 'light');
+            const isL = document.body.getAttribute('data-theme') === 'light';
+            if (isL) document.body.removeAttribute('data-theme'); else document.body.setAttribute('data-theme', 'light');
+            localStorage.setItem('theme', isL ? 'dark' : 'light');
         }
         if (localStorage.getItem('theme') === 'light') document.body.setAttribute('data-theme', 'light');
 
-        function toggleFullScreen() {
-            if (!document.fullscreenElement) document.documentElement.requestFullscreen();
-            else document.exitFullscreen();
-        }
-
-        function setMode(w, b, btn) {
-            workT = w; breakT = b; resetTimer();
-            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        }
+        function toggleFullScreen() { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); }
+        function setMode(w, b, btn) { workT = w; breakT = b; resetTimer(); document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
 
         function playAudio(type, btn) {
             if (audioCtx) { audioCtx.close(); audioCtx = null; }
-            document.querySelectorAll('.audio-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+            document.querySelectorAll('.audio-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active');
             if (type === 'silence') return;
             audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             const g = audioCtx.createGain(); g.gain.value = 0.02; g.connect(audioCtx.destination);
@@ -283,7 +249,6 @@
             document.getElementById('overlay').style.display = 'block';
         }
         function closeQR() { document.getElementById('qrModal').style.display = 'none'; document.getElementById('overlay').style.display = 'none'; }
-        
         updateUI();
     </script>
 </body>
