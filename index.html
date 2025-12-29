@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Silencio. | Focus</title>
     <link id="favicon" rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23111%22/><text y=%22.9em%22 x=%2250%25%22 font-size=%2270%22 text-anchor=%22middle%22 font-weight=%22bold%22 fill=%22white%22>S</text></svg>">
     
     <style>
         :root {
-            --phi: 1.618; --bg: #000000; --text-main: #f5f5f7; --text-dim: #86868b;
+            --bg: #000000; --text-main: #f5f5f7; --text-dim: #86868b;
             --silver: linear-gradient(145deg, #bdc3c7 0%, #ffffff 45%, #7f8c8d 100%);
             --glass: rgba(255, 255, 255, 0.04); --glass-border: rgba(255, 255, 255, 0.12); --card-bg: #111112;
         }
@@ -21,66 +21,96 @@
             background-color: var(--bg); color: var(--text-main);
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
             display: flex; align-items: center; justify-content: center;
-            min-height: 100vh; margin: 0; transition: background 0.5s ease; overflow: hidden;
+            min-height: 100vh; margin: 0; transition: background 0.5s ease; overflow-x: hidden;
         }
 
-        /* Sidebar Coffee */
         .sidebar-coffee {
-            position: fixed; left: 40px; display: flex; flex-direction: column; align-items: center; gap: 15px;
+            position: fixed; left: 40px; display: flex; flex-direction: column; align-items: center; gap: 15px; z-index: 10;
         }
-        .cup-container { position: relative; width: 30px; height: 35px; border: 2.5px solid var(--text-dim); border-radius: 4px 4px 12px 12px; overflow: hidden; }
-        .cup-handle { position: absolute; right: -8px; top: 6px; width: 8px; height: 12px; border: 2.5px solid var(--text-dim); border-radius: 0 6px 6px 0; border-left: none; }
-        .coffee-fill { position: absolute; bottom: 0; left: 0; width: 100%; background: #6F4E37; transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1); height: 0%; }
-        .coffee-label { writing-mode: vertical-rl; text-orientation: mixed; font-size: 0.6rem; letter-spacing: 2px; color: var(--text-dim); transform: rotate(180deg); white-space: nowrap; }
-
-        /* Main Elements */
-        .top-left { position: fixed; top: 25px; left: 25px; }
-        .top-right { position: fixed; top: 25px; right: 25px; }
-        .bottom-right { position: fixed; bottom: 25px; right: 30px; text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
-
-        .icon-btn {
-            background: var(--glass); border: 1px solid var(--glass-border); color: var(--text-main);
-            width: 44px; height: 44px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;
-            backdrop-filter: blur(10px); font-size: 1.2rem;
-        }
-
+        
         .container {
             width: 400px; padding: 40px; background: var(--glass); backdrop-filter: blur(40px);
             border-radius: 40px; border: 1px solid var(--glass-border); text-align: center;
+            margin: 20px; box-sizing: border-box;
         }
 
-        h1 { font-size: 1.2rem; font-weight: 400; letter-spacing: 3px; margin: 0 0 20px 0; }
-        #timer { font-size: 6.8rem; font-weight: 200; letter-spacing: -5px; margin: 10px 0; font-variant-numeric: tabular-nums; }
-        #taskInput { background: transparent; border: none; border-bottom: 1px solid var(--glass-border); color: var(--text-main); width: 80%; text-align: center; padding: 8px; font-size: 1rem; outline: none; margin-bottom: 10px; }
+        /* Responsive Logic */
+        @media (max-width: 600px) {
+            .sidebar-coffee {
+                position: relative; left: 0; flex-direction: row; justify-content: center; 
+                margin-bottom: 20px; width: 100%;
+            }
+            .coffee-label { writing-mode: horizontal-tb !important; transform: none !important; font-size: 0.7rem !important; }
+            
+            body { flex-direction: column; justify-content: flex-start; padding-top: 40px; overflow-y: auto; }
+            .container { width: 92vw; padding: 25px; border-radius: 30px; }
+            #timer { font-size: 5rem; letter-spacing: -2px; }
+            
+            /* Stacked Action Row for Mobile */
+            .action-row { flex-direction: column !important; gap: 12px !important; }
+            .main-btn, .reset-btn { width: 100% !important; flex: none !important; }
+            
+            .btn-group-responsive { flex-direction: column; width: 100%; }
+            .btn-group-responsive button { width: 100%; padding: 15px !important; }
+            
+            .bottom-right { position: relative !important; right: 0 !important; bottom: 0 !important; 
+                            text-align: center !important; align-items: center !important; margin: 30px 0; }
+        }
+
+        /* Aesthetic Unified Buttons */
+        .action-row { display: flex; gap: 10px; margin: 15px 0; }
         
-        .btn-group { display: flex; gap: 10px; justify-content: center; margin: 15px 0; }
-        button { background: transparent; border: 1px solid var(--glass-border); color: var(--text-dim); padding: 8px 16px; border-radius: 12px; cursor: pointer; transition: 0.3s; font-size: 0.75rem; }
+        .main-btn { 
+            background: var(--text-main); color: var(--bg); font-weight: 600; 
+            padding: 18px; border-radius: 16px; border: none; font-size: 1.1rem; 
+            cursor: pointer; flex: 3; transition: transform 0.1s;
+        }
+        
+        .reset-btn { 
+            background: var(--glass); border: 1px solid var(--glass-border); 
+            color: var(--text-main); padding: 18px; border-radius: 16px; 
+            font-size: 1.1rem; cursor: pointer; flex: 1; transition: background 0.2s;
+        }
+
+        .main-btn:active, .reset-btn:active { transform: scale(0.98); }
+
+        /* Icon & Labels */
+        .cup-container { position: relative; width: 30px; height: 35px; border: 2.5px solid var(--text-dim); border-radius: 4px 4px 12px 12px; overflow: hidden; }
+        .cup-handle { position: absolute; right: -8px; top: 6px; width: 8px; height: 12px; border: 2.5px solid var(--text-dim); border-radius: 0 6px 6px 0; border-left: none; }
+        .coffee-fill { position: absolute; bottom: 0; left: 0; width: 100%; background: #6F4E37; transition: height 0.6s ease; height: 0%; }
+        .coffee-label { writing-mode: vertical-rl; text-orientation: mixed; font-size: 0.6rem; letter-spacing: 2px; color: var(--text-dim); transform: rotate(180deg); white-space: nowrap; }
+
+        .top-left { position: fixed; top: 20px; left: 20px; z-index: 20; }
+        .top-right { position: fixed; top: 20px; right: 20px; z-index: 20; }
+        .bottom-right { position: fixed; bottom: 25px; right: 30px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+
+        .icon-btn { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text-main); width: 40px; height: 40px; border-radius: 50%; cursor: pointer; }
+
+        h1 { font-size: 1.2rem; font-weight: 400; letter-spacing: 3px; margin: 0 0 15px 0; }
+        #timer { font-size: 6.5rem; font-weight: 200; margin: 5px 0; font-variant-numeric: tabular-nums; }
+        #taskInput { background: transparent; border: none; border-bottom: 1px solid var(--glass-border); color: var(--text-main); width: 85%; text-align: center; padding: 10px; font-size: 1rem; outline: none; margin-bottom: 15px; }
+        
+        .btn-group { display: flex; gap: 8px; justify-content: center; margin: 15px 0; flex-wrap: wrap; }
+        button { background: transparent; border: 1px solid var(--glass-border); color: var(--text-dim); padding: 10px 14px; border-radius: 12px; cursor: pointer; transition: 0.2s; font-size: 0.8rem; }
         button.active { border-color: var(--text-main); color: var(--text-main); background: var(--glass); }
-        
-        .main-btn { background: var(--text-main); color: var(--bg); font-weight: 600; padding: 18px; border-radius: 16px; border: none; font-size: 1.1rem; cursor: pointer; flex: 2; }
-        .reset-btn { background: var(--glass); border: 1px solid var(--glass-border); color: var(--text-main); padding: 18px; border-radius: 16px; font-size: 1.1rem; cursor: pointer; }
 
-        /* Focus Report Card */
         .week-report { margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--glass-border); }
-        .week-grid { display: flex; justify-content: space-between; gap: 5px; height: 40px; align-items: flex-end; margin-top: 10px; }
-        .bar { background: var(--text-dim); width: 100%; border-radius: 3px 3px 0 0; min-height: 2px; transition: height 1s ease; opacity: 0.4; }
+        .week-grid { display: flex; justify-content: space-between; gap: 5px; height: 40px; align-items: flex-end; }
+        .bar { background: var(--text-dim); width: 100%; border-radius: 3px 3px 0 0; min-height: 2px; opacity: 0.3; }
         .bar.today { background: var(--silver); opacity: 1; }
-        .report-stats { display: flex; justify-content: space-between; font-size: 0.6rem; color: var(--text-dim); margin-top: 8px; text-transform: uppercase; letter-spacing: 1px; }
+        .report-stats { display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--text-dim); margin-top: 10px; text-transform: uppercase; }
 
-        /* Modal Settings */
-        #qrModal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--card-bg); padding: 30px; border-radius: 30px; border: 1px solid var(--glass-border); z-index: 1000; text-align: center; width: 320px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 999; backdrop-filter: blur(4px); }
-        
-        .update-box { text-align: left; margin: 15px 0; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 15px; font-size: 0.75rem; border: 1px solid var(--glass-border); }
-        .update-box h4 { margin: 0 0 8px 0; font-size: 0.8rem; color: var(--text-main); display: flex; justify-content: space-between; }
-        .update-box ul { margin: 0; padding-left: 18px; color: var(--text-dim); }
-        
-        .mail-link { color: var(--text-main); text-decoration: none; border-bottom: 1px solid var(--text-dim); font-weight: 600; }
-        .settings-link { font-size: 0.75rem; color: var(--text-dim); cursor: pointer; display: flex; align-items: center; gap: 6px; }
-        .settings-link:hover { color: var(--text-main); }
+        /* Settings Modal */
+        #qrModal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--card-bg); padding: 25px; border-radius: 30px; border: 1px solid var(--glass-border); z-index: 1000; text-align: center; width: 85%; max-width: 320px; }
+        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 999; backdrop-filter: blur(5px); }
+        .update-box { text-align: left; margin: 12px 0; padding: 12px; background: rgba(255,255,255,0.03); border-radius: 15px; font-size: 0.75rem; border: 1px solid var(--glass-border); }
+        .mail-link { color: var(--text-main); font-weight: 600; text-decoration: none; border-bottom: 1px solid var(--text-dim); }
     </style>
 </head>
 <body>
+
+    <div class="top-left"><button class="icon-btn" onclick="toggleFullScreen()">⛶</button></div>
+    <div class="top-right"><button class="icon-btn" onclick="toggleTheme()">◐</button></div>
 
     <div class="sidebar-coffee">
         <div style="position:relative">
@@ -90,12 +120,9 @@
         <div class="coffee-label"><span id="coffeeCount">0</span> CUPS BREWED</div>
     </div>
 
-    <div class="top-left"><button class="icon-btn" onclick="toggleFullScreen()">⛶</button></div>
-    <div class="top-right"><button class="icon-btn" onclick="toggleTheme()">◐</button></div>
-
     <div class="container">
         <h1>Silencio.</h1>
-        <input type="text" id="taskInput" placeholder="Current Focus Path...">
+        <input type="text" id="taskInput" placeholder="Current Focus...">
         <div id="timer">25:00</div>
         
         <div class="btn-group">
@@ -103,9 +130,9 @@
             <button class="mode-btn" onclick="setMode(50, 10, this)">50 / 10</button>
         </div>
 
-        <div style="display:flex; gap:10px;">
+        <div class="action-row">
             <button id="startBtn" class="main-btn" onclick="toggleTimer()">Start</button>
-            <button class="reset-btn" onclick="resetTimer()">↺</button>
+            <button class="reset-btn" onclick="resetTimer()">Restart ↺</button>
         </div>
 
         <div class="week-report">
@@ -120,55 +147,34 @@
             </div>
         </div>
 
-        <div class="btn-group" style="margin-top: 20px;">
+        <div class="btn-group btn-group-responsive">
             <button class="audio-btn active" onclick="playAudio('silence', this)">Silence</button>
-            <button class="audio-btn" onclick="playAudio('white', this)">White</button>
-            <button class="audio-btn" onclick="playAudio('40hz', this)">40Hz</button>
+            <button class="audio-btn" onclick="playAudio('white', this)">White Noise</button>
+            <button class="audio-btn" onclick="playAudio('40hz', this)">40Hz Beats</button>
         </div>
     </div>
 
     <div class="bottom-right">
-        <div style="font-size: 0.75rem; color: var(--text-dim);">Made by <b>Elvis For You</b></div>
-        <div class="settings-link" onclick="showQR()">
-            Support & Settings <span>⚙</span>
-        </div>
+        <div style="font-size: 0.7rem; color: var(--text-dim);">Made by <b>Elvis For You</b></div>
+        <div style="font-size: 0.75rem; cursor:pointer; color:var(--text-dim);" onclick="showQR()">Support & Settings ⚙</div>
     </div>
 
     <div id="overlay" onclick="closeQR()"></div>
     <div id="qrModal">
         <h3 style="margin:0">Control Panel</h3>
-        
         <div class="update-box">
-            <h4>v1.2 Change Log <span>✨</span></h4>
-            <ul>
-                <li>Weekly Focus Dashboard.</li>
-                <li>Persistent Coffee Rewards.</li>
-                <li>40Hz Binaural Deep Focus.</li>
-            </ul>
+            <h4 style="margin:0 0 5px 0">Support & Issues 📩</h4>
+            Report bugs to: <a href="mailto:leslievyaselvis@gmail.com" class="mail-link">leslievyaselvis@gmail.com</a>
         </div>
-
-        <div class="update-box">
-            <h4>Support & Issues <span>📩</span></h4>
-            <p style="margin: 5px 0;">Report bugs or ideas to: <br>
-            <a href="mailto:leslievyaselvis@gmail.com" class="mail-link">leslievyaselvis@gmail.com</a></p>
-        </div>
-
-        <img id="qrImg" src="" style="border: 8px solid white; border-radius: 12px; width: 130px; margin-bottom: 10px;">
+        <img id="qrImg" src="" style="border: 8px solid white; border-radius: 12px; width: 140px; margin: 10px 0;">
         <p style="font-size: 0.75rem; font-weight: 700; margin: 0;">elbel.vyas@okhdfcbank</p>
-        
-        <button onclick="closeQR()" style="background:var(--text-main); color:var(--bg); border:none; padding:12px; border-radius:12px; width:100%; cursor:pointer; margin-top:15px; font-weight:600">Back to Focus</button>
-        <button onclick="if(confirm('Wipe all history?')) {localStorage.clear(); location.reload();}" style="color: #ff3b30; background:none; border:none; margin-top:15px; font-size:0.6rem; cursor:pointer; opacity:0.6">Reset All Data</button>
+        <button onclick="closeQR()" style="background:var(--text-main); color:var(--bg); border:none; padding:12px; border-radius:12px; width:100%; cursor:pointer; margin-top:15px; font-weight:600">Close</button>
+        <button onclick="if(confirm('Reset all data?')) {localStorage.clear(); location.reload();}" style="color: #ff3b30; background:none; border:none; margin-top:15px; font-size:0.6rem; cursor:pointer; opacity:0.6">Reset All Data</button>
     </div>
 
     <script>
         let workT = 25, breakT = 5, timeLeft = 25 * 60, timerId = null, isWork = true, audioCtx = null;
-        
-        let stats = JSON.parse(localStorage.getItem('silencioStats')) || {
-            week: [0, 0, 0, 0, 0, 0, 0],
-            lastDate: new Date().toDateString(),
-            coffeeLevel: 0,
-            coffeeTotal: 0
-        };
+        let stats = JSON.parse(localStorage.getItem('silencioStats')) || { week: [0,0,0,0,0,0,0], lastDate: new Date().toDateString(), coffeeLevel: 0, coffeeTotal: 0 };
 
         function checkDateShift() {
             const today = new Date().toDateString();
@@ -178,9 +184,7 @@
                 stats.lastDate = today; save();
             }
         }
-
         function save() { localStorage.setItem('silencioStats', JSON.stringify(stats)); }
-
         function updateUI() {
             checkDateShift();
             const m = Math.floor(timeLeft / 60), s = timeLeft % 60;
@@ -190,64 +194,19 @@
             document.getElementById('todayMins').textContent = stats.week[6] + 'm';
             document.getElementById('coffeeFill').style.height = stats.coffeeLevel + '%';
             document.getElementById('coffeeCount').textContent = stats.coffeeTotal;
-
             const bars = document.querySelectorAll('.bar');
             const maxMins = Math.max(...stats.week, 60);
-            stats.week.forEach((mins, i) => { bars[i].style.height = (mins / maxMins * 100) + '%'; });
+            stats.week.forEach((mins, i) => { if(bars[i]) bars[i].style.height = (mins / maxMins * 100) + '%'; });
         }
-
-        function toggleTimer() {
-            if (timerId) { clearInterval(timerId); timerId = null; document.getElementById('startBtn').textContent = "Resume"; }
-            else { document.getElementById('startBtn').textContent = "Pause"; timerId = setInterval(() => { timeLeft--; updateUI(); if (timeLeft <= 0) { clearInterval(timerId); timerId = null; finish(); } }, 1000); }
-        }
-
+        function toggleTimer() { if (timerId) { clearInterval(timerId); timerId = null; document.getElementById('startBtn').textContent = "Resume"; } else { document.getElementById('startBtn').textContent = "Pause"; timerId = setInterval(() => { timeLeft--; updateUI(); if (timeLeft <= 0) { clearInterval(timerId); timerId = null; finish(); } }, 1000); } }
         function resetTimer() { clearInterval(timerId); timerId = null; timeLeft = (isWork ? workT : breakT) * 60; document.getElementById('startBtn').textContent = "Start"; updateUI(); }
-
-        function finish() {
-            if (isWork) {
-                stats.week[6] += workT;
-                let gain = (workT === 25) ? 50 : 100;
-                stats.coffeeLevel += gain;
-                if (stats.coffeeLevel >= 100) { stats.coffeeTotal += Math.floor(stats.coffeeLevel/100); stats.coffeeLevel %= 100; }
-                save();
-            }
-            isWork = !isWork; timeLeft = (isWork ? workT : breakT) * 60;
-            updateUI(); document.getElementById('startBtn').textContent = "Start";
-        }
-
-        function toggleTheme() {
-            const isL = document.body.getAttribute('data-theme') === 'light';
-            if (isL) document.body.removeAttribute('data-theme'); else document.body.setAttribute('data-theme', 'light');
-            localStorage.setItem('theme', isL ? 'dark' : 'light');
-        }
+        function finish() { if (isWork) { stats.week[6] += workT; let gain = (workT === 25) ? 50 : 100; stats.coffeeLevel += gain; if (stats.coffeeLevel >= 100) { stats.coffeeTotal += Math.floor(stats.coffeeLevel/100); stats.coffeeLevel %= 100; } save(); } isWork = !isWork; timeLeft = (isWork ? workT : breakT) * 60; updateUI(); document.getElementById('startBtn').textContent = "Start"; }
+        function toggleTheme() { const isL = document.body.getAttribute('data-theme') === 'light'; if (isL) document.body.removeAttribute('data-theme'); else document.body.setAttribute('data-theme', 'light'); localStorage.setItem('theme', isL ? 'dark' : 'light'); }
         if (localStorage.getItem('theme') === 'light') document.body.setAttribute('data-theme', 'light');
-
         function toggleFullScreen() { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); }
         function setMode(w, b, btn) { workT = w; breakT = b; resetTimer(); document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
-
-        function playAudio(type, btn) {
-            if (audioCtx) { audioCtx.close(); audioCtx = null; }
-            document.querySelectorAll('.audio-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active');
-            if (type === 'silence') return;
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const g = audioCtx.createGain(); g.gain.value = 0.02; g.connect(audioCtx.destination);
-            if (type === 'white') {
-                const bSize = audioCtx.sampleRate * 2, buffer = audioCtx.createBuffer(1, bSize, audioCtx.sampleRate), d = buffer.getChannelData(0);
-                for (let i = 0; i < bSize; i++) d[i] = Math.random() * 2 - 1;
-                const s = audioCtx.createBufferSource(); s.buffer = buffer; s.loop = true; s.connect(g); s.start();
-            } else if (type === '40hz') {
-                const oL = audioCtx.createOscillator(), pL = audioCtx.createStereoPanner(), oR = audioCtx.createOscillator(), pR = audioCtx.createStereoPanner();
-                oL.frequency.value = 200; pL.pan.value = -1; oR.frequency.value = 240; pR.pan.value = 1;
-                oL.connect(pL).connect(g); oR.connect(pR).connect(g); oL.start(); oR.start();
-            }
-        }
-
-        function showQR() {
-            const upi = "upi://pay?pa=elbel.vyas@okhdfcbank&pn=Elvis&cu=INR";
-            document.getElementById('qrImg').src = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(upi)}`;
-            document.getElementById('qrModal').style.display = 'block';
-            document.getElementById('overlay').style.display = 'block';
-        }
+        function playAudio(type, btn) { if (audioCtx) { audioCtx.close(); audioCtx = null; } document.querySelectorAll('.audio-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); if (type === 'silence') return; audioCtx = new (window.AudioContext || window.webkitAudioContext)(); const g = audioCtx.createGain(); g.gain.value = 0.015; g.connect(audioCtx.destination); if (type === 'white') { const bSize = audioCtx.sampleRate * 2, buffer = audioCtx.createBuffer(1, bSize, audioCtx.sampleRate), d = buffer.getChannelData(0); for (let i = 0; i < bSize; i++) d[i] = Math.random() * 2 - 1; const s = audioCtx.createBufferSource(); s.buffer = buffer; s.loop = true; s.connect(g); s.start(); } else if (type === '40hz') { const oL = audioCtx.createOscillator(), pL = audioCtx.createStereoPanner(), oR = audioCtx.createOscillator(), pR = audioCtx.createStereoPanner(); oL.frequency.value = 200; pL.pan.value = -1; oR.frequency.value = 240; pR.pan.value = 1; oL.connect(pL).connect(g); oR.connect(pR).connect(g); oL.start(); oR.start(); } }
+        function showQR() { const upi = "upi://pay?pa=elbel.vyas@okhdfcbank&pn=Elvis&cu=INR"; document.getElementById('qrImg').src = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(upi)}`; document.getElementById('qrModal').style.display = 'block'; document.getElementById('overlay').style.display = 'block'; }
         function closeQR() { document.getElementById('qrModal').style.display = 'none'; document.getElementById('overlay').style.display = 'none'; }
         updateUI();
     </script>
