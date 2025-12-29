@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Silencio | Deep Focus</title>
+    <style>
+        :root {
+            --phi: 1.618;
+            --bg: #000000;
+            --silver-metallic: linear-gradient(145deg, #bdc3c7 0%, #ffffff 45%, #7f8c8d 100%);
+            --text-main: #f5f5f7;
+            --text-dim: #86868b;
+            --glass: rgba(255, 255, 255, 0.04);
+            --glass-border: rgba(255, 255, 255, 0.12);
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .app-logo {
+            width: 80px;
+            height: 80px;
+            background: #111112;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: calc(20px * var(--phi));
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+        }
+
+        .logo-s {
+            font-size: 52px;
+            font-weight: 700;
+            background: var(--silver-metallic);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .container {
+            width: 380px;
+            padding: calc(22px * var(--phi));
+            background: var(--glass);
+            backdrop-filter: blur(30px);
+            border-radius: 35px;
+            border: 1px solid var(--glass-border);
+            text-align: center;
+        }
+
+        #taskInput {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid var(--glass-border);
+            color: var(--text-main);
+            width: 80%;
+            text-align: center;
+            padding: 8px;
+            font-size: 0.9rem;
+            outline: none;
+            margin-bottom: 15px;
+            transition: 0.3s;
+        }
+
+        #taskInput:focus { border-bottom: 1px solid #fff; }
+        #taskInput::placeholder { color: var(--text-dim); }
+
+        #timer {
+            font-size: 6.8rem;
+            font-weight: 200;
+            letter-spacing: -4px;
+            margin: 0.2rem 0;
+            font-variant-numeric: tabular-nums;
+        }
+
+        #status { font-size: 0.7rem; font-weight: 500; text-transform: uppercase; letter-spacing: 3px; color: var(--text-dim); }
+
+        .btn-group { display: flex; gap: 10px; justify-content: center; margin: 18px 0; }
+        
+        button {
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            color: var(--text-dim);
+            padding: 8px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: 0.2s;
+        }
+
+        button.active { border-color: #fff; color: #fff; background: rgba(255,255,255,0.08); }
+        
+        .main-btn { background: #fff; color: #000; font-weight: 600; width: 100%; padding: 16px; font-size: 1rem; border: none; border-radius: 14px; margin-top: 10px; }
+
+        .history-box {
+            margin-top: calc(20px * var(--phi));
+            width: 380px;
+            max-height: 120px;
+            overflow-y: auto;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            padding: 15px;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .log-entry { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
+
+        .top-tools { position: fixed; top: 25px; right: 25px; }
+        .footer { position: fixed; bottom: 25px; right: 35px; text-align: right; font-size: 0.75rem; color: var(--text-dim); line-height: 1.8; }
+        .footer strong { color: #fff; }
+        .donate-btn { margin-top: 10px; display: inline-block; padding: 5px 14px; border: 1px solid #fff; border-radius: 20px; color: #fff; cursor: pointer; }
+
+        #qrModal {
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: #1c1c1e; padding: 40px; border-radius: 30px; border: 1px solid var(--glass-border); z-index: 1000; text-align: center;
+        }
+        #overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 999; }
+    </style>
+</head>
+<body>
+
+    <div class="top-tools">
+        <button onclick="toggleFS()" style="border-radius: 50%; width: 44px; height: 44px; font-size: 1.2rem;">⛶</button>
+    </div>
+
+    <div class="app-logo">
+        <span class="logo-s">S</span>
+    </div>
+
+    <div class="container">
+        <input type="text" id="taskInput" placeholder="What's your focus?">
+        <div id="status">Focus</div>
+        <div id="timer">25:00</div>
+        
+        <div class="btn-group">
+            <button class="mode-btn active" onclick="setMode(25, 5, this)">25 / 5</button>
+            <button class="mode-btn" onclick="setMode(50, 10, this)">50 / 10</button>
+        </div>
+
+        <button id="startBtn" class="main-btn" onclick="toggleTimer()">Start Session</button>
+        
+        <div style="margin-top:30px; font-size:0.6rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:2px">Soundscape</div>
+        <div class="btn-group">
+            <button class="audio-btn active" onclick="playAudio('silence', this)">Silence</button>
+            <button class="audio-btn" onclick="playAudio('white', this)">White Noise</button>
+            <button class="audio-btn" onclick="playAudio('40hz', this)">40Hz Beats</button>
+        </div>
+    </div>
+
+    <div class="history-box">
+        <div style="display:flex; justify-content:space-between; margin-bottom:12px; font-size: 0.7rem; font-weight: 600;">
+            <span>HISTORY</span>
+            <span onclick="downloadLog()" style="cursor:pointer; text-decoration: underline;">Download .txt</span>
+        </div>
+        <div id="logItems"></div>
+    </div>
+
+    <div id="overlay" onclick="closeQR()"></div>
+    <div id="qrModal">
+        <h3 style="margin-top: 0;">Support Silencio</h3>
+        <img id="qrImg" src="" style="border: 12px solid white; border-radius: 20px; margin: 15px 0; width: 200px;">
+        <p style="font-size:0.8rem; color: var(--text-dim);">elbel.vyas@okhdfcbank</p>
+        <button onclick="closeQR()" style="background:#fff; color:#000; border:none; padding: 12px 24px; border-radius:12px; width: 100%; cursor: pointer; font-weight: 600;">Done</button>
+    </div>
+
+    <div class="footer">
+        Made by <strong>Elvis For You</strong><br>
+        <a href="mailto:leslievyaselvis@gmail.com?subject=Silencio%20Support">Updates & Issues</a><br>
+        <div class="donate-btn" onclick="showQR()">💸 Support Elvis</div>
+    </div>
+
+    <script>
+        let workT = 25, breakT = 5, timeLeft = 25 * 60;
+        let timerId = null, isWork = true, audioCtx = null;
+
+        function updateDisplay() {
+            const m = Math.floor(timeLeft / 60);
+            const s = timeLeft % 60;
+            document.getElementById('timer').textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+        }
+
+        // Notification Sound Engine
+        function ringBell() {
+            const bellCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = bellCtx.createOscillator();
+            const gain = bellCtx.createGain();
+            
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(880, bellCtx.currentTime); // High A note
+            
+            gain.gain.setValueAtTime(0, bellCtx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.2, bellCtx.currentTime + 0.1);
+            gain.gain.exponentialRampToValueAtTime(0.0001, bellCtx.currentTime + 1.5);
+            
+            osc.connect(gain);
+            gain.connect(bellCtx.destination);
+            
+            osc.start();
+            osc.stop(bellCtx.currentTime + 1.5);
+        }
+
+        function toggleTimer() {
+            if (timerId) {
+                clearInterval(timerId); timerId = null;
+                document.getElementById('startBtn').textContent = "Resume Session";
+            } else {
+                document.getElementById('startBtn').textContent = "Pause Session";
+                timerId = setInterval(() => {
+                    timeLeft--; updateDisplay();
+                    if (timeLeft <= 0) { 
+                        clearInterval(timerId); timerId = null; 
+                        ringBell(); 
+                        sessionDone(); 
+                    }
+                }, 1000);
+            }
+        }
+
+        function sessionDone() {
+            const now = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            const task = document.getElementById('taskInput').value || (isWork ? "Focus Session" : "Break");
+            const entry = document.createElement('div');
+            entry.className = "log-entry";
+            entry.innerHTML = `<span>${task}</span> <span>${now}</span>`;
+            document.getElementById('logItems').prepend(entry);
+            
+            setTimeout(() => alert(`${isWork ? "Focus" : "Break"} complete.`), 100);
+            isWork = !isWork;
+            timeLeft = (isWork ? workT : breakT) * 60;
+            document.getElementById('status').textContent = isWork ? "Focus" : "Break";
+            updateDisplay();
+            document.getElementById('startBtn').textContent = "Start Session";
+        }
+
+        function setMode(w, b, btn) {
+            workT = w; breakT = b;
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            clearInterval(timerId); timerId = null;
+            timeLeft = w * 60; isWork = true;
+            document.getElementById('status').textContent = "Focus";
+            updateDisplay(); document.getElementById('startBtn').textContent = "Start Session";
+        }
+
+        function playAudio(type, btn) {
+            if (audioCtx) { audioCtx.close(); audioCtx = null; }
+            document.querySelectorAll('.audio-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            if (type === 'silence') return;
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const g = audioCtx.createGain(); g.gain.value = 0.02; g.connect(audioCtx.destination);
+            if (type === 'white') {
+                const bSize = audioCtx.sampleRate * 2, buffer = audioCtx.createBuffer(1, bSize, audioCtx.sampleRate), d = buffer.getChannelData(0);
+                for (let i = 0; i < bSize; i++) d[i] = Math.random() * 2 - 1;
+                const s = audioCtx.createBufferSource(); s.buffer = buffer; s.loop = true; s.connect(g); s.start();
+            } else if (type === '40hz') {
+                const oL = audioCtx.createOscillator(), pL = audioCtx.createStereoPanner(), oR = audioCtx.createOscillator(), pR = audioCtx.createStereoPanner();
+                oL.frequency.value = 200; pL.pan.value = -1; oR.frequency.value = 240; pR.pan.value = 1;
+                oL.connect(pL).connect(g); oR.connect(pR).connect(g); oL.start(); oR.start();
+            }
+        }
+
+        function toggleFS() {
+            if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+            else document.exitFullscreen();
+        }
+
+        function downloadLog() {
+            const text = "SILENCIO LOG\n" + document.getElementById('logItems').innerText;
+            const blob = new Blob([text], {type: 'text/plain'});
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob); a.download = 'silencio_history.txt'; a.click();
+        }
+
+        function showQR() {
+            const upi = "upi://pay?pa=elbel.vyas@okhdfcbank&pn=Elvis%20Leslie%20Vyas&cu=INR";
+            document.getElementById('qrImg').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(upi)}`;
+            document.getElementById('qrModal').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+        function closeQR() {
+            document.getElementById('qrModal').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
