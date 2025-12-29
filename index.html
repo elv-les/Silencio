@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Silencio | Deep Focus</title>
+    <title>Silencio | Silver Edition</title>
     <style>
         :root {
             --phi: 1.618;
@@ -29,6 +29,7 @@
             -webkit-font-smoothing: antialiased;
         }
 
+        /* Metallic Silver Icon */
         .app-logo {
             width: 80px;
             height: 80px;
@@ -37,7 +38,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: calc(20px * var(--phi));
+            margin-bottom: calc(18px * var(--phi));
             border: 1px solid var(--glass-border);
             box-shadow: 0 15px 35px rgba(0,0,0,0.5);
         }
@@ -52,7 +53,7 @@
 
         .container {
             width: 380px;
-            padding: calc(22px * var(--phi));
+            padding: calc(20px * var(--phi));
             background: var(--glass);
             backdrop-filter: blur(30px);
             border-radius: 35px;
@@ -61,65 +62,43 @@
         }
 
         #taskInput {
-            background: transparent;
-            border: none;
-            border-bottom: 1px solid var(--glass-border);
-            color: var(--text-main);
-            width: 80%;
-            text-align: center;
-            padding: 8px;
-            font-size: 0.9rem;
-            outline: none;
-            margin-bottom: 15px;
-            transition: 0.3s;
+            background: transparent; border: none; border-bottom: 1px solid var(--glass-border);
+            color: var(--text-main); width: 85%; text-align: center; padding: 10px;
+            font-size: 0.95rem; outline: none; margin-bottom: 15px; transition: 0.3s;
         }
 
         #taskInput:focus { border-bottom: 1px solid #fff; }
-        #taskInput::placeholder { color: var(--text-dim); }
 
-        #timer {
-            font-size: 6.8rem;
-            font-weight: 200;
-            letter-spacing: -4px;
-            margin: 0.2rem 0;
-            font-variant-numeric: tabular-nums;
+        .stats-bar {
+            display: flex; justify-content: center; gap: 20px;
+            font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase;
+            letter-spacing: 2px; margin-bottom: 10px;
         }
 
-        #status { font-size: 0.7rem; font-weight: 500; text-transform: uppercase; letter-spacing: 3px; color: var(--text-dim); }
+        #timer {
+            font-size: 6.8rem; font-weight: 200; letter-spacing: -4px;
+            margin: 0.2rem 0; font-variant-numeric: tabular-nums;
+        }
 
         .btn-group { display: flex; gap: 10px; justify-content: center; margin: 18px 0; }
         
         button {
-            background: transparent;
-            border: 1px solid var(--glass-border);
-            color: var(--text-dim);
-            padding: 8px 16px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 0.75rem;
-            transition: 0.2s;
+            background: transparent; border: 1px solid var(--glass-border);
+            color: var(--text-dim); padding: 8px 16px; border-radius: 12px;
+            cursor: pointer; font-size: 0.75rem; transition: 0.2s;
         }
 
         button.active { border-color: #fff; color: #fff; background: rgba(255,255,255,0.08); }
-        
-        .main-btn { background: #fff; color: #000; font-weight: 600; width: 100%; padding: 16px; font-size: 1rem; border: none; border-radius: 14px; margin-top: 10px; }
+        .main-btn { background: #fff; color: #000; font-weight: 600; width: 100%; padding: 16px; font-size: 1.1rem; border: none; border-radius: 16px; margin-top: 10px; cursor: pointer; }
 
         .history-box {
-            margin-top: calc(20px * var(--phi));
-            width: 380px;
-            max-height: 120px;
-            overflow-y: auto;
-            font-size: 0.8rem;
-            color: var(--text-dim);
-            padding: 15px;
-            border-top: 1px solid var(--glass-border);
+            margin-top: 25px; width: 380px; max-height: 110px; overflow-y: auto;
+            font-size: 0.8rem; color: var(--text-dim); padding: 15px; border-top: 1px solid var(--glass-border);
         }
 
         .log-entry { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.03); }
 
-        .top-tools { position: fixed; top: 25px; right: 25px; }
-        .footer { position: fixed; bottom: 25px; right: 35px; text-align: right; font-size: 0.75rem; color: var(--text-dim); line-height: 1.8; }
-        .footer strong { color: #fff; }
+        .footer { position: fixed; bottom: 25px; right: 35px; text-align: right; font-size: 0.75rem; color: var(--text-dim); }
         .donate-btn { margin-top: 10px; display: inline-block; padding: 5px 14px; border: 1px solid #fff; border-radius: 20px; color: #fff; cursor: pointer; }
 
         #qrModal {
@@ -131,17 +110,14 @@
 </head>
 <body>
 
-    <div class="top-tools">
-        <button onclick="toggleFS()" style="border-radius: 50%; width: 44px; height: 44px; font-size: 1.2rem;">⛶</button>
-    </div>
-
-    <div class="app-logo">
-        <span class="logo-s">S</span>
-    </div>
+    <div class="app-logo"><span class="logo-s">S</span></div>
 
     <div class="container">
-        <input type="text" id="taskInput" placeholder="What's your focus?">
-        <div id="status">Focus</div>
+        <div class="stats-bar">
+            <span>SESSIONS: <b id="statSessions" style="color:#fff">0</b></span>
+            <span>TOTAL MINS: <b id="statMins" style="color:#fff">0</b></span>
+        </div>
+        <input type="text" id="taskInput" placeholder="What are we focusing on?">
         <div id="timer">25:00</div>
         
         <div class="btn-group">
@@ -160,8 +136,8 @@
     </div>
 
     <div class="history-box">
-        <div style="display:flex; justify-content:space-between; margin-bottom:12px; font-size: 0.7rem; font-weight: 600;">
-            <span>HISTORY</span>
+        <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-weight: 600;">
+            <span>SESSION LOG</span>
             <span onclick="downloadLog()" style="cursor:pointer; text-decoration: underline;">Download .txt</span>
         </div>
         <div id="logItems"></div>
@@ -170,88 +146,82 @@
     <div id="overlay" onclick="closeQR()"></div>
     <div id="qrModal">
         <h3 style="margin-top: 0;">Support Silencio</h3>
-        <img id="qrImg" src="" style="border: 12px solid white; border-radius: 20px; margin: 15px 0; width: 200px;">
-        <p style="font-size:0.8rem; color: var(--text-dim);">elbel.vyas@okhdfcbank</p>
-        <button onclick="closeQR()" style="background:#fff; color:#000; border:none; padding: 12px 24px; border-radius:12px; width: 100%; cursor: pointer; font-weight: 600;">Done</button>
+        <img id="qrImg" src="" style="border: 10px solid white; border-radius: 15px; margin: 15px 0; width: 200px;">
+        <p style="font-weight:600;">elbel.vyas@okhdfcbank</p>
+        <button onclick="closeQR()" style="background:#fff; color:#000; border:none; padding: 12px; border-radius:10px; width: 100%; cursor: pointer; font-weight:600;">Close</button>
     </div>
 
     <div class="footer">
         Made by <strong>Elvis For You</strong><br>
-        <a href="mailto:leslievyaselvis@gmail.com?subject=Silencio%20Support">Updates & Issues</a><br>
+        <a href="mailto:leslievyaselvis@gmail.com">Updates & Issues</a><br>
         <div class="donate-btn" onclick="showQR()">💸 Support Elvis</div>
     </div>
 
     <script>
         let workT = 25, breakT = 5, timeLeft = 25 * 60;
         let timerId = null, isWork = true, audioCtx = null;
+        
+        // Load persistent data
+        let stats = JSON.parse(localStorage.getItem('sStats')) || { sessions: 0, mins: 0 };
+        let logs = JSON.parse(localStorage.getItem('sLogs')) || [];
 
-        function updateDisplay() {
+        function updateUI() {
             const m = Math.floor(timeLeft / 60);
             const s = timeLeft % 60;
             document.getElementById('timer').textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+            document.getElementById('statSessions').textContent = stats.sessions;
+            document.getElementById('statMins').textContent = stats.mins;
+            renderLogs();
         }
 
-        // Notification Sound Engine
         function ringBell() {
-            const bellCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const osc = bellCtx.createOscillator();
-            const gain = bellCtx.createGain();
-            
-            osc.type = "sine";
-            osc.frequency.setValueAtTime(880, bellCtx.currentTime); // High A note
-            
-            gain.gain.setValueAtTime(0, bellCtx.currentTime);
-            gain.gain.linearRampToValueAtTime(0.2, bellCtx.currentTime + 0.1);
-            gain.gain.exponentialRampToValueAtTime(0.0001, bellCtx.currentTime + 1.5);
-            
-            osc.connect(gain);
-            gain.connect(bellCtx.destination);
-            
-            osc.start();
-            osc.stop(bellCtx.currentTime + 1.5);
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const o = ctx.createOscillator(); const g = ctx.createGain();
+            o.type = "sine"; o.frequency.setValueAtTime(880, ctx.currentTime);
+            g.gain.setValueAtTime(0, ctx.currentTime);
+            g.gain.linearRampToValueAtTime(0.2, ctx.currentTime + 0.1);
+            g.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1);
+            o.connect(g); g.connect(ctx.destination);
+            o.start(); o.stop(ctx.currentTime + 1);
         }
 
         function toggleTimer() {
-            if (timerId) {
-                clearInterval(timerId); timerId = null;
-                document.getElementById('startBtn').textContent = "Resume Session";
-            } else {
+            if (timerId) { clearInterval(timerId); timerId = null; document.getElementById('startBtn').textContent = "Resume Session"; }
+            else {
                 document.getElementById('startBtn').textContent = "Pause Session";
                 timerId = setInterval(() => {
-                    timeLeft--; updateDisplay();
-                    if (timeLeft <= 0) { 
-                        clearInterval(timerId); timerId = null; 
-                        ringBell(); 
-                        sessionDone(); 
-                    }
+                    timeLeft--; updateUI();
+                    if (timeLeft <= 0) { clearInterval(timerId); timerId = null; ringBell(); finish(); }
                 }, 1000);
             }
         }
 
-        function sessionDone() {
-            const now = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            const task = document.getElementById('taskInput').value || (isWork ? "Focus Session" : "Break");
-            const entry = document.createElement('div');
-            entry.className = "log-entry";
-            entry.innerHTML = `<span>${task}</span> <span>${now}</span>`;
-            document.getElementById('logItems').prepend(entry);
+        function finish() {
+            const taskName = document.getElementById('taskInput').value || (isWork ? "Focus Session" : "Break");
+            const timeStr = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
             
-            setTimeout(() => alert(`${isWork ? "Focus" : "Break"} complete.`), 100);
-            isWork = !isWork;
-            timeLeft = (isWork ? workT : breakT) * 60;
-            document.getElementById('status').textContent = isWork ? "Focus" : "Break";
-            updateDisplay();
+            if(isWork) {
+                stats.sessions++; stats.mins += workT;
+                localStorage.setItem('sStats', JSON.stringify(stats));
+            }
+            
+            logs.unshift({ task: taskName, time: timeStr });
+            localStorage.setItem('sLogs', JSON.stringify(logs.slice(0, 15)));
+            
+            alert(`${isWork ? "Focus" : "Break"} complete!`);
+            isWork = !isWork; timeLeft = (isWork ? workT : breakT) * 60;
+            updateUI();
             document.getElementById('startBtn').textContent = "Start Session";
         }
 
+        function renderLogs() {
+            document.getElementById('logItems').innerHTML = logs.map(l => `<div class="log-entry"><span>${l.task}</span><span>${l.time}</span></div>`).join('');
+        }
+
         function setMode(w, b, btn) {
-            workT = w; breakT = b;
+            workT = w; breakT = b; timeLeft = w * 60; isWork = true;
             document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            clearInterval(timerId); timerId = null;
-            timeLeft = w * 60; isWork = true;
-            document.getElementById('status').textContent = "Focus";
-            updateDisplay(); document.getElementById('startBtn').textContent = "Start Session";
+            btn.classList.add('active'); updateUI();
         }
 
         function playAudio(type, btn) {
@@ -272,13 +242,8 @@
             }
         }
 
-        function toggleFS() {
-            if (!document.fullscreenElement) document.documentElement.requestFullscreen();
-            else document.exitFullscreen();
-        }
-
         function downloadLog() {
-            const text = "SILENCIO LOG\n" + document.getElementById('logItems').innerText;
+            const text = "SILENCIO LOG\n" + logs.map(l => `[${l.time}] ${l.task}`).join('\n');
             const blob = new Blob([text], {type: 'text/plain'});
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob); a.download = 'silencio_history.txt'; a.click();
@@ -291,10 +256,9 @@
             document.getElementById('overlay').style.display = 'block';
         }
 
-        function closeQR() {
-            document.getElementById('qrModal').style.display = 'none';
-            document.getElementById('overlay').style.display = 'none';
-        }
+        function closeQR() { document.getElementById('qrModal').style.display = 'none'; document.getElementById('overlay').style.display = 'none'; }
+        
+        updateUI();
     </script>
 </body>
 </html>
